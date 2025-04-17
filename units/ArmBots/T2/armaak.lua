@@ -234,7 +234,6 @@ return {
 				weapontype = "MissileLauncher",
 				weaponvelocity = 800,
 				customparams = {
-					bogus = 1,
 				},
 				damage = {
 					vtol = 100,

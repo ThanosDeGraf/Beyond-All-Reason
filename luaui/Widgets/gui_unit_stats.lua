@@ -604,7 +604,7 @@ local function drawStats(uDefID, uID)
 			end
 		end
 
-		if range > 0 then
+		if range > 0 and not uWep.customParams.bogus ~= "1" then
 			local oRld = max(0.00000000001, uWep.stockpile == true and uWep.stockpileTime/30 or uWep.reload)
 			if uID and useExp and not ((uWep.stockpile and uWep.stockpileTime)) then
 				oRld = spGetUnitWeaponState(uID, weaponNums[i] or -1, "reloadTimeXP") or

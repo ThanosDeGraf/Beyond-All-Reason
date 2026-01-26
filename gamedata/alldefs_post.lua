@@ -1705,15 +1705,19 @@ function UnitDef_Post(name, uDef)
 	end
 
 	-- Deduplicate buildoptions (various modoptions or later mods can add the same units)
-	if uDef.buildoptions then
+	-- Multiple unit defs can share the same table reference, so we create a new table for each
+	if uDef.buildoptions and #uDef.buildoptions > 0 then
 		local seen = {}
 		local dedupedBuildoptions = {}
-		for _, unitName in ipairs(uDef.buildoptions) do
-			if not seen[unitName] then
+		
+		for i = 1, #uDef.buildoptions do
+			local unitName = uDef.buildoptions[i]
+			if type(unitName) == "string" and unitName ~= "" and not seen[unitName] then
 				seen[unitName] = true
 				dedupedBuildoptions[#dedupedBuildoptions + 1] = unitName
 			end
 		end
+		
 		uDef.buildoptions = dedupedBuildoptions
 	end
 end
@@ -1934,14 +1938,11 @@ function WeaponDef_Post(name, wDef)
 		end
 		----------------------------------------
 
-		-- Target borders of unit hitboxes rather than center (-1 = far border, 0 = center, 1 = near border)
-		-- wDef.targetborder = 1.0
-
 		--Controls whether the weapon aims for the center or the edge of its target's collision volume. Clamped between -1.0 - target the far border, and 1.0 - target the near border.
 		if wDef.targetborder == nil then
 			wDef.targetborder = 1 --Aim for just inside the hitsphere
 
-			if wDef.weapontype == "BeamLaser" or wDef.weapontype == "LightningCannon" then
+			if Engine.FeatureSupport.targetBorderBug and wDef.weapontype == "BeamLaser" or wDef.weapontype == "LightningCannon" then
 				wDef.targetborder = 0.33 --approximates in current engine with bugged calculation, to targetborder = 1.
 			end
 		end
